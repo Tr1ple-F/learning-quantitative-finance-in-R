@@ -15,23 +15,56 @@ par(mfrow=c(1,1))
 plot(GMReturn,FReturn)
 plot(lGMReturn, GMReturn)
 
+niter = 1e5 
+below = rep(0, niter) 
+set.seed(2009)
+for (i in 1:niter)
+{
+  r = rnorm(45, mean = 0.05/253,
+  sd = 0.23/sqrt(253))
+  logPrice = log(1e6) + cumsum(r)
+  minlogP = min(logPrice) 
+  below[i] = as.numeric(minlogP < log(950000))
+  }
+mean(below)
+
+#########################
+# Hedge fund simulation #
+#########################
 rm(list=ls(all=TRUE))
-niter = 1e2
+niter = 1e5
 below = rep(0,niter)
-end = rep(0,niter)
-r = rnorm(100,mean=0.00/253,sd=.0/sqrt(253))
-logPrice = log(1e6) + cumsum(r)
-plot(exp(logPrice), type="o", col="red")
+above = rep(0,niter)
+loss = rep(0,niter)
+profit = rep(0, niter)
 set.seed(2009)
 options(warn=-1)
 for (i in 1:niter)
 {
   r = rnorm(100,mean=0.05/253,sd=.23/sqrt(253))
   logPrice = log(1e6) + cumsum(r)
-  lines(exp(logPrice), type="o", col="red")
-  minlogP = min(logPrice)
-  below[i] = as.numeric(minlogP < log(950000))
-  end[i] = as.numeric(logPrice[100] < log(1e6))
+  minI = Position(function(x) x < log(950000), logPrice)
+  if (is.na(minI)) {
+    minI = 101
+  }
+  maxI = Position(function(x) x > log(1100000), logPrice)
+  if (is.na(maxI)) {
+    maxI = 101
+  }
+  if (minI < maxI) {
+    below[i] = as.numeric(1)
+    loss[i] = as.numeric(1)
+    profit[i] = as.numeric(-50000)
+  } else if (maxI < minI) {
+    above[i] = as.numeric(1)
+    profit[i] = as.numeric(100000)
+    loss[i] = as.numeric(0)
+  } else {
+    loss[i] = as.numeric(logPrice[100] < log(1e6))
+    profit[i] = as.numeric(exp(logPrice[100])-1e6)
+  }
 }
-mean(below)
-mean(end)
+mean(below) # Likelihood of 50000$ loss
+mean(above) # Likelihood of 100000$ profit
+mean(loss) # Probability of loss
+mean(profit) # Expected profit
