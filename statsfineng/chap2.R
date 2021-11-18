@@ -86,9 +86,13 @@ mean(roi) # Return on investment
 set.seed(2012)
 n = 253
 par(mfrow=c(3,3))
+lgr = rep(0, 9)
 for (i in (1:9))
 {
   logr = rnorm(n,0.05/253,0.2/sqrt(253))
   price = c(120,120*exp(cumsum(logr)))
+  lgr[i] = cumsum(logr)[253]
   plot(price,type="l")
 }
+mean(lgr)
+sd(lgr)
