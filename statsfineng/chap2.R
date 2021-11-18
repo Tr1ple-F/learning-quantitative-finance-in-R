@@ -31,6 +31,7 @@ mean(below)
 #########################
 # Hedge fund simulation #
 #########################
+
 rm(list=ls(all=TRUE))
 niter = 1e6
 below = rep(0,niter)
@@ -76,4 +77,9 @@ roi = rep(0,niter)
 for (i in 1:niter) {
   roi[i] = ((profit[i]+1e6)/1e6)^(1/days[i])
 }
-mean(roi)
+mean(roi) # Return on investment
+
+##########################
+# Geometric random walks #
+##########################
+
