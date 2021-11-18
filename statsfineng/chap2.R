@@ -32,11 +32,12 @@ mean(below)
 # Hedge fund simulation #
 #########################
 rm(list=ls(all=TRUE))
-niter = 1e5
+niter = 1e6
 below = rep(0,niter)
 above = rep(0,niter)
 loss = rep(0,niter)
 profit = rep(0, niter)
+days = rep(0,niter)
 set.seed(2009)
 options(warn=-1)
 for (i in 1:niter)
@@ -55,16 +56,24 @@ for (i in 1:niter)
     below[i] = as.numeric(1)
     loss[i] = as.numeric(1)
     profit[i] = as.numeric(-50000)
+    days[i] = minI
   } else if (maxI < minI) {
     above[i] = as.numeric(1)
     profit[i] = as.numeric(100000)
     loss[i] = as.numeric(0)
+    days[i] = maxI
   } else {
     loss[i] = as.numeric(logPrice[100] < log(1e6))
     profit[i] = as.numeric(exp(logPrice[100])-1e6)
+    days[i] = 100
   }
 }
 mean(below) # Likelihood of 50000$ loss
 mean(above) # Likelihood of 100000$ profit
 mean(loss) # Probability of loss
 mean(profit) # Expected profit
+roi = rep(0,niter)
+for (i in 1:niter) {
+  roi[i] = ((profit[i]+1e6)/1e6)^(1/days[i])
+}
+mean(roi)
