@@ -83,3 +83,12 @@ mean(roi) # Return on investment
 # Geometric random walks #
 ##########################
 
+set.seed(2012)
+n = 253
+par(mfrow=c(3,3))
+for (i in (1:9))
+{
+  logr = rnorm(n,0.05/253,0.2/sqrt(253))
+  price = c(120,120*exp(cumsum(logr)))
+  plot(price,type="l")
+}
